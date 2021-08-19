@@ -1,26 +1,23 @@
-// import logo from './logo.svg';
+import logo from './logo.svg';
 import './App.css';
-import './App_user.css';
-import DebtCalc from "./DebtCalc";
+import Calculator from "./components/calculator/Calculator";
 
 function App() {
   return (
     <div className="App">
-      <DebtCalc />
-      {/*<header className="App-header">*/}
-      {/*  <img src={logo} className="App-logo" alt="logo" />*/}
-      {/*  <p>*/}
-      {/*    Edit <code>src/App.js</code> and save to reload.*/}
-      {/*  </p>*/}
-      {/*  <a*/}
-      {/*    className="App-link"*/}
-      {/*    href="https://reactjs.org"*/}
-      {/*    target="_blank"*/}
-      {/*    rel="noopener noreferrer"*/}
-      {/*  >*/}
-      {/*    Learn React*/}
-      {/*  </a>*/}
-      {/*</header>*/}
+      <div className="content-wrapper">
+        <div className="calculator-wrapper">
+          <div className="calculator-header">
+            Debt free calculator
+          </div>
+          <div className="heading">
+            Calculate your payments with a debt-free calculator
+            <span>The tool is free to use, no payments are required!</span>
+          </div>
+          <Calculator />
+        </div>
+        <div className="divider">&nbsp;</div>
+      </div>
     </div>
   );
 }
