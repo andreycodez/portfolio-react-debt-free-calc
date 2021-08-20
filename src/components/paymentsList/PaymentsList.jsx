@@ -3,7 +3,6 @@ import React from "react";
 class PaymentsList extends React.Component {
   render() {
     const payments = this.props.payments;
-    console.log(payments)
     return (
         <div className="payments-list payment-info-item">
           <div className="payments-table-heading">

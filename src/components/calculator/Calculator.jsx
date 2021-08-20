@@ -6,38 +6,54 @@ class Calculator extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      amount: 100000,
-      interest: 9.35,
       balance: 0,
-      minPayment: 0,
-      isCalcSet: true,
-      payments: [
-        {
-          date: '17.08.2021',
-          amount: 800,
-          interest: 245.37,
-          principal: 554.63,
-        },
-        {
-          date: '17.08.2021',
-          amount: 800,
-          interest: 245.37,
-          principal: 554.63,
-        },
-        {
-          date: '17.08.2021',
-          amount: 800,
-          interest: 245.37,
-          principal: 554.63,
-        },
-      ]
+      interest: 0,
+      interestUSD: 0,
+      paymentsAmount: 0,
     }
+  }
+
+  get interestUSD() {return this.interestUSD}
+  get paymentsAmount() {return this.paymentsAmount}
+
+
+  componentDidMount() {
+    this.setState( (state) => (
+        {
+          amount: 100000,
+          interest: 9.35,
+          balance: 100000,
+          minPayment: 0,
+          isCalcSet: true,
+          payments: [
+              {
+                date: '17.08.2021',
+                amount: 800,
+                interest: 245.37,
+                principal: 554.63,
+              },
+              {
+                date: '17.08.2021',
+                amount: 800,
+                interest: 245.37,
+                principal: 554.63,
+              },
+              {
+                date: '17.08.2021',
+                amount: 800,
+                interest: 245.37,
+                principal: 554.63,
+              },
+          ],
+          interestUSD: this.balance * this.interest / 100,
+          paymentsAmount: this.balance / (this.amount * 0.1),
+        }
+      )
+    )
   }
 
 
   render() {
-    this.state.interestUSD = this.state.amount * this.state.interest / 100
-    this.state.paymentsAmount = this.state.amount / (this.state.amount * 0.1)
     const appState = this.state
     if (appState.isCalcSet) {
       return (
