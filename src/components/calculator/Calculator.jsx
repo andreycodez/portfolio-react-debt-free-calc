@@ -1,5 +1,6 @@
 import React from "react";
 import CalculatorStats from "../calculatorStats/CalculatorStats";
+import PaymentsList from "../paymentsList/PaymentsList";
 
 class Calculator extends React.Component {
   constructor(props) {
@@ -10,6 +11,26 @@ class Calculator extends React.Component {
       balance: 0,
       minPayment: 0,
       isCalcSet: true,
+      payments: [
+        {
+          date: '17.08.2021',
+          amount: 800,
+          interest: 245.37,
+          principal: 554.63,
+        },
+        {
+          date: '17.08.2021',
+          amount: 800,
+          interest: 245.37,
+          principal: 554.63,
+        },
+        {
+          date: '17.08.2021',
+          amount: 800,
+          interest: 245.37,
+          principal: 554.63,
+        },
+      ]
     }
   }
 
@@ -37,46 +58,7 @@ class Calculator extends React.Component {
                   </div>
                   <input type="button" className="submit-button" value="Submit payment" />
                 </form>
-                <div className="payments-list payment-info-item">
-                  <div className="payments-table-heading">
-                    <div className="payment-table-item">Date</div>
-                    <div className="payment-table-item">Amount</div>
-                    <div className="payment-table-item">Interest</div>
-                    <div className="payment-table-item">Principal</div>
-                  </div>
-                  <div className="payments">
-                    <div id="1" className="payment-detail">
-                      <div className="payment-date">11.04.2021</div>
-                      <div className="payment-amount">$800</div>
-                      <div className="payment-interest">$245,37</div>
-                      <div className="payment-principal">$554.63</div>
-                    </div>
-                    <div id="2" className="payment-detail">
-                      <div className="payment-date">11.04.2021</div>
-                      <div className="payment-amount">$800</div>
-                      <div className="payment-interest">$245,37</div>
-                      <div className="payment-principal">$554.63</div>
-                    </div>
-                    <div id="3" className="payment-detail">
-                      <div className="payment-date">11.04.2021</div>
-                      <div className="payment-amount">$800</div>
-                      <div className="payment-interest">$245,37</div>
-                      <div className="payment-principal">$554.63</div>
-                    </div>
-                    <div id="4" className="payment-detail">
-                      <div className="payment-date">11.04.2021</div>
-                      <div className="payment-amount">$800</div>
-                      <div className="payment-interest">$245,37</div>
-                      <div className="payment-principal">$554.63</div>
-                    </div>
-                    <div id="5" className="payment-detail">
-                      <div className="payment-date">11.04.2021</div>
-                      <div className="payment-amount">$800</div>
-                      <div className="payment-interest">$1245,37</div>
-                      <div className="payment-principal">$554.63</div>
-                    </div>
-                  </div>
-                </div>
+                <PaymentsList payments={appState.payments} />
               </div>
             </div>
             <CalculatorStats appState={appState} />
