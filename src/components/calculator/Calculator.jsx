@@ -9,49 +9,36 @@ class Calculator extends React.Component {
       balance: 0,
       interest: 0,
       interestUSD: 0,
+      isCalcSet: false,
+      minPayment: 0,
       paymentsAmount: 0,
+      payments: [],
     }
   }
 
-  get interestUSD() {return this.interestUSD}
-  get paymentsAmount() {return this.paymentsAmount}
-
-
-  componentDidMount() {
-    this.setState( (state) => (
-        {
-          amount: 100000,
-          interest: 9.35,
-          balance: 100000,
-          minPayment: 0,
-          isCalcSet: true,
-          payments: [
-              {
-                date: '17.08.2021',
-                amount: 800,
-                interest: 245.37,
-                principal: 554.63,
-              },
-              {
-                date: '17.08.2021',
-                amount: 800,
-                interest: 245.37,
-                principal: 554.63,
-              },
-              {
-                date: '17.08.2021',
-                amount: 800,
-                interest: 245.37,
-                principal: 554.63,
-              },
-          ],
-          interestUSD: this.balance * this.interest / 100,
-          paymentsAmount: this.balance / (this.amount * 0.1),
-        }
-      )
-    )
+  sliderHandle = (slider) => {
+    slider.preventDefault();
+    const sliderLabel = slider.parentElement
   }
 
+  submitClickHandle = (e) => {
+    e.preventDefault();
+    const balance = +document.getElementById('amount').value || +document.getElementById('amountInput').defaultValue;
+    const interest = +document.getElementById('interest').value || +document.getElementById('interestInput').defaultValue;
+    const interestUSD = balance * interest / 100;
+    const minPayment = Math.round((balance / 100) + (interestUSD / 12) * 100) / 100;
+    const paymentsAmount = (balance + interestUSD) / minPayment
+
+    this.setState( {
+        balance: balance,
+        interest: interest,
+        interestUSD: interestUSD,
+        minPayment: minPayment,
+        paymentsAmount: Math.floor(paymentsAmount) + 1,
+        isCalcSet: true,
+      }
+    )
+  }
 
   render() {
     const appState = this.state
@@ -88,10 +75,10 @@ class Calculator extends React.Component {
                 <form className="slider-parameter">
                   <div className="slider-title">Loan amount</div>
                   <div className="slider-price">
-                    <span className="measure">$</span><span className="value">120000</span>
+                    <span className="measure">$</span><span id="amountLabel" className="value">120000</span>
                   </div>
                   <div className="slider">
-                    <input type="range" min="50000" max="250000" defaultValue={appState.amount} step="1000" />
+                    <input id="amount" type="range" min="50000" max="250000" defaultValue={appState.amount} step="1000" />
                     <div className="range-values">
                       <div className="minimal">50 K</div>
                       <div className="maximal">250 K</div>
@@ -101,17 +88,17 @@ class Calculator extends React.Component {
                 <div className="slider-parameter">
                   <div className="slider-title">Interest</div>
                   <div className="slider-price">
-                    <span className="measure">%</span><span className="value">9.35</span>
+                    <span className="measure">%</span><span id="interestLabel" className="value">9.35</span>
                   </div>
                   <div className="slider">
-                    <input type="range" min="0.1" max="15" defaultValue={appState.interest} step="0.01" />
+                    <input id="interest" type="range" min="0.1" max="15" defaultValue={appState.interest} step="0.01" />
                     <div className="range-values">
                       <div className="minimal">0.1</div>
                       <div className="maximal">15</div>
                     </div>
                   </div>
                 </div>
-                <input type="button" className="submit-button" value="Submit for calculation" />
+                <input type="button" onClick={this.submitClickHandle} className="submit-button" value="Submit for calculation" />
               </div>
             </div>
             <CalculatorStats appState={appState}/>
