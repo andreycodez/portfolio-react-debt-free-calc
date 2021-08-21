@@ -16,9 +16,23 @@ class Calculator extends React.Component {
     }
   }
 
-  sliderHandle = (slider) => {
+  componentDidMount() {
+    const amountLabel = document.getElementById('amountLabel');
+    const interestLabel = document.getElementById('interestLabel');
+    amountLabel.innerText = document.getElementById('amount').value;
+    interestLabel.innerText = document.getElementById('interest').value;
+  }
+
+  amountSliderHandle = (slider) => {
     slider.preventDefault();
-    const sliderLabel = slider.parentElement
+    const sliderLabel = document.getElementById('amountLabel');
+    sliderLabel.innerText = slider.target.value;
+  }
+
+  interestSliderHandle = (slider) => {
+    slider.preventDefault();
+    const sliderLabel = document.getElementById('interestLabel');
+    sliderLabel.innerText = slider.target.value;
   }
 
   submitClickHandle = (e) => {
@@ -48,8 +62,8 @@ class Calculator extends React.Component {
             <div className="calculator-left">
               <div className="payment-info  calculator-left-item">
                 <div className="payment-info-message payment-info-item">
-                  In order to be debt free you need to make a minimum monthly payment of <span>$654,40</span> during
-                  next <span>74</span> months
+                  In order to be debt free you need to make a minimum monthly payment of <span>${appState.minPayment}</span> during
+                  next <span>{appState.paymentsAmount}</span> months
                 </div>
                 <form className="payment-info-form payment-info-item">
                   <div className="payment-amount correct">
@@ -78,7 +92,7 @@ class Calculator extends React.Component {
                     <span className="measure">$</span><span id="amountLabel" className="value">120000</span>
                   </div>
                   <div className="slider">
-                    <input id="amount" type="range" min="50000" max="250000" defaultValue={appState.amount} step="1000" />
+                    <input id="amount" type="range" min="50000" max="250000" onChange={this.amountSliderHandle} defaultValue="100000" step="1000" />
                     <div className="range-values">
                       <div className="minimal">50 K</div>
                       <div className="maximal">250 K</div>
@@ -91,7 +105,7 @@ class Calculator extends React.Component {
                     <span className="measure">%</span><span id="interestLabel" className="value">9.35</span>
                   </div>
                   <div className="slider">
-                    <input id="interest" type="range" min="0.1" max="15" defaultValue={appState.interest} step="0.01" />
+                    <input id="interest" type="range" min="0.1" max="15" onChange={this.interestSliderHandle} defaultValue="9.35" step="0.01" />
                     <div className="range-values">
                       <div className="minimal">0.1</div>
                       <div className="maximal">15</div>
