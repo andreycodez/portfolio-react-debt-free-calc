@@ -32,14 +32,14 @@ class CalculatorStats extends React.Component {
                       {appState.interest}
                     </div>
                   </div>
-                  <div className="stats-item">
-                    <div className="stats-item-header">
-                      Int, $
-                    </div>
-                    <div className="stats-item-value">
-                      {appState.interestUSD}
-                    </div>
-                  </div>
+                  {/*<div className="stats-item">*/}
+                  {/*  <div className="stats-item-header">*/}
+                  {/*    Int, $*/}
+                  {/*  </div>*/}
+                  {/*  <div className="stats-item-value">*/}
+                  {/*    {appState.interestUSD}*/}
+                  {/*  </div>*/}
+                  {/*</div>*/}
                   <div className="stats-item">
                     <div className="stats-item-header">
                       Payments

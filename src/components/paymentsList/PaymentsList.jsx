@@ -3,8 +3,9 @@ import React from "react";
 class PaymentsList extends React.Component {
   render() {
     const payments = this.props.payments;
+    console.log(payments.count);
 
-    if (payments.count > 0) {
+    if (payments.length > 0) {
       return (
           <div className="payments-list payment-info-item">
             <div className="payments-table-heading">
