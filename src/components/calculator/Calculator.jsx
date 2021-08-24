@@ -10,6 +10,7 @@ class Calculator extends React.Component {
       interest: 0,
       interestUSD: 0,
       isCalcSet: false,
+      isPaymentBlocked: true,
       minPayment: 0,
       paymentsAmount: 0,
       payments: [],
@@ -23,54 +24,64 @@ class Calculator extends React.Component {
     interestLabel.innerText = document.getElementById('interest').value;
   }
 
-  componentDidUpdate() {
-    console.log(this.state);
-  }
-
-  amountSliderHandle = (slider) => {
+  sliderHandle = (slider) => {
     slider.preventDefault();
-    const sliderLabel = document.getElementById('amountLabel');
+    const sliderLabel = document.getElementById(slider.target.dataset.label);
     sliderLabel.innerText = slider.target.value;
   }
 
-  interestSliderHandle = (slider) => {
-    slider.preventDefault();
-    const sliderLabel = document.getElementById('interestLabel');
-    sliderLabel.innerText = slider.target.value;
-  }
-
-  minPaymentClick = () => {
+  minPaymentClick = function() {
     const paymentField = document.getElementById('paymentAmount');
     paymentField.setAttribute('value', this.state.minPayment);
   }
 
-  finalPaymentClick = () => {
+  finalPaymentClick = function() {
     const paymentField = document.getElementById('paymentAmount');
     paymentField.setAttribute('value', this.state.balance + this.state.interestUSD / 12);
   }
 
   paymentFieldValueHandle = (e) => {
     e.preventDefault();
-    const paymentField = document.getElementById('paymentAmount');
     const errorMessage = document.getElementById('errorMessage');
-    const setErrorFieldState = function() {
-      paymentField.classList.remove('correct');
-      paymentField.classList.add('incorrect');
+    const paymentContainer = document.getElementById('paymentContainer');
+    const paymentButton = document.getElementById('paymentSubmit');
+
+    const paymentButtonStateChange = () => {
+      const paymentButtonState = this.state.isPaymentBlocked;
+      console.log(paymentButtonState);
+      paymentButtonState ?
+          (paymentButton.removeAttribute('disabled')) :
+          paymentButton.setAttribute('disabled','');
     }
-    const setValidFieldState = function() {
-      if (paymentField.classList.contains('incorrect')) {
-        paymentField.classList.remove('incorrect');
-        paymentField.classList.add('correct');
-      } else { return }
+
+    const setErrorFieldState = () => {
+      paymentContainer.classList.remove('correct');
+      paymentContainer.classList.add('incorrect');
+      this.setState({
+        isPaymentBlocked: true,
+      })
+      paymentButtonStateChange();
+    }
+
+    const setValidFieldState = () => {
+      this.setState({
+        isPaymentBlocked: false,
+      })
+      paymentButtonStateChange();
+      if (paymentContainer.classList.contains('incorrect')) {
+        paymentContainer.classList.remove('incorrect');
+        paymentContainer.classList.add('correct');
+      }
     }
     if (e.target.value < this.state.minPayment) {
       setErrorFieldState();
-      errorMessage.innerHTML = `The value is less than a least monthly payment <br/><a href="#" onClick="${this.state.minPaymentClick}">Pay min amount</a>`
-    } else if (e.target.value > (this.balance + this.interestUSD)) {
+      errorMessage.innerHTML = `The value is less than a least monthly payment <br/><a href="#" onClick=${this.minPaymentClick}">Pay min amount</a>`
+    } else if (e.target.value > (this.state.balance + this.state.interestUSD / 12)) {
       setErrorFieldState();
-      errorMessage.innerHTML = `The value is higher than the final payment. <br/><a href="#" onClick="${this.state.finalPaymentClick}">Pay final payment</a>`
+      errorMessage.innerHTML = `The value is higher than the final payment. <br/><a href="#" onClick=${this.finalPaymentClick}>Pay final payment</a>`
     } else {
       setValidFieldState();
+      errorMessage.innerHTML = '';
     }
   }
 
@@ -79,9 +90,7 @@ class Calculator extends React.Component {
     const interest = +document.getElementById('interest').value || +document.getElementById('interestInput').defaultValue;
     const interestUSD = balance * interest / 100;
     const minPayment = Math.round(((balance / 100) + (interestUSD / 12))*100)/100;
-    console.log(Math.round((balance / 100)));
-    console.log(interestUSD / 12)
-    const paymentsAmount = (balance + interestUSD) / minPayment
+    const paymentsAmount = (balance + interestUSD) / minPayment;
 
     this.setState( {
         balance: balance,
@@ -99,17 +108,20 @@ class Calculator extends React.Component {
   }
 
   submitPaymentClickHandle = () => {
+    console.log('submit button clicked');
     const paymentField = document.getElementById('paymentAmount');
     const payment = paymentField.value;
     const balance = this.state.balance - payment
     const interestUSD = balance * this.state.interest / 100;
     const minPayment = Math.round(((balance / 100) + (interestUSD / 12)) * 100) / 100;
     const paymentsAmount = (balance + interestUSD) / minPayment
+    const interest = Math.round(interestUSD / 12 * 100) / 100;
+    const principal = Math.round((payment - interest) * 100) /100
     const newPayment = {
       date: new Date().toLocaleDateString(),
       amount: payment,
-      interest: Math.round(interestUSD / 12 * 100) / 100,
-      principal: Math.round((balance / 100) * 100) /100,
+      interest: interest,
+      principal: principal,
     }
     this.setState({
       balance: this.roundValue(balance),
@@ -122,7 +134,6 @@ class Calculator extends React.Component {
 
   render() {
     const appState = this.state
-    console.log(appState.payments)
     if (appState.isCalcSet) {
       return (
           <div className="calculator-body">
@@ -133,11 +144,18 @@ class Calculator extends React.Component {
                   next <span>{appState.paymentsAmount}</span> months
                 </div>
                 <form className="payment-info-form payment-info-item">
-                  <div className="payment-amount incorrect">
-                    <input id="paymentAmount" type="number" min="0" placeholder="0,00" step=".05" dafaultvalue="214.30" onChange={this.paymentFieldValueHandle}/>
+                  <div id="paymentContainer" className="payment-amount">
+                    <input id="paymentAmount" type="number" min="0" placeholder="0,00" step="100" defaultValue="214.30" onChange={this.paymentFieldValueHandle}/>
                     <span id="errorMessage"></span>
                   </div>
-                  <input type="button" className="submit-button" onClick={this.submitPaymentClickHandle} value="Submit payment" />
+                  <input
+                      id="paymentSubmit"
+                      type="button"
+                      className="submit-button"
+                      onClick={this.submitPaymentClickHandle}
+                      value="Submit payment"
+                      disabled
+                  />
                 </form>
                 <PaymentsList payments={appState.payments} />
               </div>
@@ -156,7 +174,7 @@ class Calculator extends React.Component {
                     <span className="measure">$</span><span id="amountLabel" className="value">120000</span>
                   </div>
                   <div className="slider">
-                    <input id="amount" type="range" min="10000" max="250000" onChange={this.amountSliderHandle} defaultValue="38000" step="1000" />
+                    <input id="amount" type="range" min="10000" max="250000" onChange={this.sliderHandle} data-label={'amountLabel'} defaultValue="38000" step="1000" />
                     <div className="range-values">
                       <div className="minimal">50 K</div>
                       <div className="maximal">250 K</div>
@@ -169,7 +187,7 @@ class Calculator extends React.Component {
                     <span className="measure">%</span><span id="interestLabel" className="value">9.35</span>
                   </div>
                   <div className="slider">
-                    <input id="interest" type="range" min="0.1" max="15" onChange={this.interestSliderHandle} defaultValue="9.50" step="0.01" />
+                    <input id="interest" type="range" min="0.1" max="15" onChange={this.sliderHandle} data-label={'interestLabel'} defaultValue="9.50" step="0.01" />
                     <div className="range-values">
                       <div className="minimal">0.1</div>
                       <div className="maximal">15</div>
