@@ -33,12 +33,40 @@ class Calculator extends React.Component {
     if (this.state.isCalcSet && this.state.isPaymentBlocked) {
       const paymentSubmitButton = document.getElementById('paymentSubmit')
       paymentSubmitButton.setAttribute('disabled', '');
+      const resetCalcButton = document.getElementById('resetCalc');
+      resetCalcButton.style.display = 'none';
     }
     if (this.state.isCalcOver) {
       const paymentField = document.getElementById('paymentAmount');
       paymentField.setAttribute('disabled', '');
+      const paymentButton = document.getElementById('paymentSubmit');
+      paymentButton.style.display = 'none';
+      const setValueLinks = document.getElementById('setValueLinks');
+      setValueLinks.style.display = 'none';
+      const resetCalcButton = document.getElementById('resetCalc');
+      resetCalcButton.style.display = 'block';
     }
-    console.log(this.state);
+    //console.log(this.state);
+  }
+
+  resetCalc = () => {
+    this.setState(
+        {
+          loan: 0,
+          balance: 0,
+          interest: 0,
+          interestUSD: 0,
+          interestPaymentCur: 0,
+          isCalcSet: false,
+          isPaymentBlocked: true,
+          isCalcOver: false,
+          minPayment: 0,
+          maxPayment: 0,
+          payments: [],
+          principalPaid: 0,
+          interestPaid: 0,
+        }
+    );
   }
 
   sliderHandle = (slider) => {
@@ -101,11 +129,6 @@ class Calculator extends React.Component {
     } else if (value > this.state.maxPayment) {
       setErrorFieldState();
       errorMessage.innerHTML = "The value is higher than the final payment";
-    } else if (value === 0 && this.state.isCalcOver) {
-      setErrorFieldState();
-      console.log('Loan Closed')
-      errorMessage.innerHTML = "Loan Closed";
-      paymentField.setAttribute('disabled','')
     } else {
       setValidFieldState();
       errorMessage.innerHTML = '';
@@ -151,6 +174,7 @@ class Calculator extends React.Component {
     const interestUSD = balance * this.state.interest / 100;
     const minPayment = Math.round(((balance / 100) + (interestUSD / 12)) * 100) / 100;
     const newInterestPaymentCur = this.roundValue(balance * (this.state.interest / 100 / 12));
+    const maxPayment = Math.round(((balance) + (interestUSD / 12))*100)/100;
     let calcIsOver = false;
     if (balance <= 0) {
       calcIsOver = true;
@@ -166,6 +190,7 @@ class Calculator extends React.Component {
       balance: this.roundValue(balance),
       interestUSD: this.roundValue(interestUSD),
       minPayment: this.roundValue(minPayment),
+      maxPayment: maxPayment,
       payments: [...this.state.payments, newPayment],
       interestPaymentCur: newInterestPaymentCur,
       principalPaid: this.roundValue(this.state.principalPaid + principalPaid),
@@ -196,7 +221,7 @@ class Calculator extends React.Component {
                         defaultValue="0"
                         onChange={this.paymentFieldValueHandle}/>
                     <div id="errorMessage" className="errorMessage"></div>
-                    <div className="setValueLinks">
+                    <div id="setValueLinks" className="setValueLinks">
                       <a href="#" onClick={this.minPaymentClick}>Pay min amount</a>
                       <a href="#" onClick={this.finalPaymentClick}>Close loan</a>
                     </div>
@@ -207,6 +232,13 @@ class Calculator extends React.Component {
                       className="submit-button"
                       onClick={this.submitPaymentClickHandle}
                       value="Submit payment"
+                  />
+                  <input
+                      id="resetCalc"
+                      type="button"
+                      className="submit-button invisible"
+                      onClick={this.resetCalc}
+                      value="New Loan"
                   />
                 </form>
                 <PaymentsList payments={appState.payments} />
