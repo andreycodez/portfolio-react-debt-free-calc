@@ -3,7 +3,7 @@ import React from "react";
 class PaymentsList extends React.Component {
   render() {
     const payments = this.props.payments;
-    console.log(payments.count);
+    //console.log(payments.count);
 
     if (payments.length > 0) {
       return (
