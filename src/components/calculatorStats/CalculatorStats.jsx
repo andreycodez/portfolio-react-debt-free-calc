@@ -26,18 +26,18 @@ class CalculatorStats extends React.Component {
                   </div>
                   <div className="stats-item">
                     <div className="stats-item-header">
-                      Int, %
+                      Principal, paid
                     </div>
                     <div className="stats-item-value">
-                      {appState.interest}
+                      {appState.principalPaid}
                     </div>
                   </div>
                   <div className="stats-item">
                     <div className="stats-item-header">
-                      Payments
+                      Interest, paid
                     </div>
                     <div className="stats-item-value">
-                      {appState.paymentsAmount}
+                      {appState.interestPaid}
                     </div>
                   </div>
                 </div>

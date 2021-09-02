@@ -3,18 +3,22 @@ import CalculatorStats from "../calculatorStats/CalculatorStats";
 import PaymentsList from "../paymentsList/PaymentsList";
 
 class Calculator extends React.Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = {
+      loan: 0,
       balance: 0,
       interest: 0,
       interestUSD: 0,
+      interestPaymentCur: 0,
       isCalcSet: false,
       isPaymentBlocked: true,
+      isCalcOver: false,
       minPayment: 0,
       maxPayment: 0,
-      paymentsAmount: 0,
       payments: [],
+      principalPaid: 0,
+      interestPaid: 0,
     }
   }
 
@@ -30,6 +34,11 @@ class Calculator extends React.Component {
       const paymentSubmitButton = document.getElementById('paymentSubmit')
       paymentSubmitButton.setAttribute('disabled', '');
     }
+    if (this.state.isCalcOver) {
+      const paymentField = document.getElementById('paymentAmount');
+      paymentField.setAttribute('disabled', '');
+    }
+    console.log(this.state);
   }
 
   sliderHandle = (slider) => {
@@ -38,29 +47,31 @@ class Calculator extends React.Component {
     sliderLabel.innerText = slider.target.value;
   }
 
-  minPaymentClick = function() {
+  minPaymentClick = () => {
     const paymentField = document.getElementById('paymentAmount');
     paymentField.setAttribute('value', this.state.minPayment);
+    paymentField.value = this.state.minPayment;
+    this.setCheckFieldValue(paymentField.value)
   }
 
-  finalPaymentClick = function() {
+  finalPaymentClick = () => {
     const paymentField = document.getElementById('paymentAmount');
-    paymentField.setAttribute('value', this.state.balance + this.state.interestUSD / 12);
+    paymentField.setAttribute('value', this.state.maxPayment);
+    paymentField.value = this.state.maxPayment;
+    this.setCheckFieldValue(paymentField.value)
   }
 
-  paymentFieldValueHandle = (e) => {
-    e.preventDefault();
+  setCheckFieldValue = (value) => {
     const errorMessage = document.getElementById('errorMessage');
     const paymentContainer = document.getElementById('paymentContainer');
     const paymentButton = document.getElementById('paymentSubmit');
+    const paymentField = document.getElementById('paymentAmount');
 
-    const paymentButtonStateChange = (value) => {
-      if (value === 'disabled') {
+    const paymentButtonStateChange = (someValue) => {
+      if (someValue === 'disabled') {
         paymentButton.setAttribute('disabled','');
-        console.log('Button disabled');
       } else {
         paymentButton.removeAttribute('disabled');
-        console.log('Button Enabled');
       }
     }
 
@@ -84,35 +95,43 @@ class Calculator extends React.Component {
       }
     }
 
-    const fieldValue = e.target.value;
-
-    if (fieldValue < this.state.minPayment) {
+    if (value < this.state.minPayment) {
       setErrorFieldState();
-      errorMessage.innerHTML = `The value is less than a least monthly payment <br/><a href="#" onClick=${this.minPaymentClick}">Pay min amount</a>`
-    } else if (fieldValue > this.state.maxPayment) {
+      errorMessage.innerHTML = "The value is less than a least monthly payment";
+    } else if (value > this.state.maxPayment) {
       setErrorFieldState();
-      errorMessage.innerHTML = `The value is higher than the final payment. <br/><a href="#" onClick=${this.finalPaymentClick}>Pay final payment</a>`
+      errorMessage.innerHTML = "The value is higher than the final payment";
+    } else if (value === 0 && this.state.isCalcOver) {
+      setErrorFieldState();
+      console.log('Loan Closed')
+      errorMessage.innerHTML = "Loan Closed";
+      paymentField.setAttribute('disabled','')
     } else {
       setValidFieldState();
       errorMessage.innerHTML = '';
     }
   }
 
+  paymentFieldValueHandle = (e) => {
+    this.setCheckFieldValue(e.target.value);
+  }
+
   submitSlidersClickHandle = () => {
     const balance = +document.getElementById('amount').value || +document.getElementById('amountInput').defaultValue;
     const interest = +document.getElementById('interest').value || +document.getElementById('interestInput').defaultValue;
     const interestUSD = balance * interest / 100;
+    const interestPaymentCur = this.roundValue(interestUSD / 12);
     const minPayment = Math.round(((balance / 100) + (interestUSD / 12))*100)/100;
     const maxPayment = Math.round(((balance) + (interestUSD / 12))*100)/100;
-    const paymentsAmount = (balance + interestUSD) / minPayment;
 
     this.setState( {
+        loan: balance,
         balance: balance,
         interest: interest,
         interestUSD: interestUSD,
+        interestPaymentCur: interestPaymentCur,
         minPayment: minPayment,
         maxPayment: maxPayment,
-        paymentsAmount: Math.floor(paymentsAmount) + 1,
         isCalcSet: true,
       }
     )
@@ -123,29 +142,37 @@ class Calculator extends React.Component {
   }
 
   submitPaymentClickHandle = () => {
-    console.log('submit button clicked');
     const paymentField = document.getElementById('paymentAmount');
-    const payment = paymentField.value;
-    const balance = this.state.balance - payment
+    const payment = +paymentField.value;
+    const principalPaid = this.roundValue(payment - this.state.interestPaymentCur);
+    const interestPaid = this.state.interestPaymentCur;
+    const oldBalance = this.state.balance
+    const balance = this.roundValue(oldBalance - payment + this.state.interestPaymentCur);
     const interestUSD = balance * this.state.interest / 100;
     const minPayment = Math.round(((balance / 100) + (interestUSD / 12)) * 100) / 100;
-    const paymentsAmount = (balance + interestUSD) / minPayment
-    const interest = Math.round(interestUSD / 12 * 100) / 100;
-    const principal = Math.round((payment - interest) * 100) /100
+    const newInterestPaymentCur = this.roundValue(balance * (this.state.interest / 100 / 12));
+    let calcIsOver = false;
+    if (balance <= 0) {
+      calcIsOver = true;
+    }
+
     const newPayment = {
       date: new Date().toLocaleDateString(),
       amount: payment,
-      interest: interest,
-      principal: principal,
+      principal: principalPaid,
+      interest: interestPaid,
     }
-    this.setState((prevState) => ({
-      ...prevState,
+    this.setState({
       balance: this.roundValue(balance),
       interestUSD: this.roundValue(interestUSD),
       minPayment: this.roundValue(minPayment),
-      paymentsAmount: Math.floor(this.roundValue(paymentsAmount)) + 1,
       payments: [...this.state.payments, newPayment],
-    }))
+      interestPaymentCur: newInterestPaymentCur,
+      principalPaid: this.roundValue(this.state.principalPaid + principalPaid),
+      interestPaid: this.roundValue(this.state.interestPaid + interestPaid),
+      isCalcOver: calcIsOver,
+    })
+    paymentField.value = this.roundValue(minPayment);
   }
 
   render() {
@@ -168,7 +195,11 @@ class Calculator extends React.Component {
                         step="100"
                         defaultValue="0"
                         onChange={this.paymentFieldValueHandle}/>
-                    <span id="errorMessage"></span>
+                    <div id="errorMessage" className="errorMessage"></div>
+                    <div className="setValueLinks">
+                      <a href="#" onClick={this.minPaymentClick}>Pay min amount</a>
+                      <a href="#" onClick={this.finalPaymentClick}>Close loan</a>
+                    </div>
                   </div>
                   <input
                       id="paymentSubmit"
