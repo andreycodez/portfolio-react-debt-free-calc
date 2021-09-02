@@ -37,14 +37,18 @@ class Calculator extends React.Component {
       resetCalcButton.style.display = 'none';
     }
     if (this.state.isCalcOver) {
-      const paymentField = document.getElementById('paymentAmount');
-      paymentField.setAttribute('disabled', '');
+      const paymentContainer = document.getElementById('paymentContainer');
+      paymentContainer.style.display = 'none';
+      // const paymentField = document.getElementById('paymentAmount');
+      // paymentField.style.display = 'none';
       const paymentButton = document.getElementById('paymentSubmit');
       paymentButton.style.display = 'none';
-      const setValueLinks = document.getElementById('setValueLinks');
-      setValueLinks.style.display = 'none';
+      // const setValueLinks = document.getElementById('setValueLinks');
+      // setValueLinks.style.display = 'none';
       const resetCalcButton = document.getElementById('resetCalc');
       resetCalcButton.style.display = 'block';
+      const generalInfo = document.getElementById('calcGeneralInfo');
+      generalInfo.innerHTML = "<h1>Congrats!</h1>You are now <strong>DEBT-FREE</strong>";
     }
     //console.log(this.state);
   }
@@ -207,7 +211,7 @@ class Calculator extends React.Component {
           <div className="calculator-body">
             <div className="calculator-left">
               <div className="payment-info  calculator-left-item">
-                <div className="payment-info-message payment-info-item">
+                <div id="calcGeneralInfo" className="payment-info-message payment-info-item">
                   In order to be debt free you need to make a minimum monthly payment of <span>${appState.minPayment}</span>
                 </div>
                 <form className="payment-info-form payment-info-item">
