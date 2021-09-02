@@ -97,7 +97,6 @@ class Calculator extends React.Component {
     const errorMessage = document.getElementById('errorMessage');
     const paymentContainer = document.getElementById('paymentContainer');
     const paymentButton = document.getElementById('paymentSubmit');
-    const paymentField = document.getElementById('paymentAmount');
 
     const paymentButtonStateChange = (someValue) => {
       if (someValue === 'disabled') {
@@ -226,8 +225,8 @@ class Calculator extends React.Component {
                         onChange={this.paymentFieldValueHandle}/>
                     <div id="errorMessage" className="errorMessage"></div>
                     <div id="setValueLinks" className="setValueLinks">
-                      <a href="#" onClick={this.minPaymentClick}>Pay min amount</a>
-                      <a href="#" onClick={this.finalPaymentClick}>Close loan</a>
+                      <a href="/#" onClick={this.minPaymentClick}>Pay min amount</a>
+                      <a href="/#" onClick={this.finalPaymentClick}>Close loan</a>
                     </div>
                   </div>
                   <input
