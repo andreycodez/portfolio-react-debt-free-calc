@@ -51,7 +51,7 @@ class CalculatorStats extends React.Component {
             <div className="info-group">
               <div className="no-data-info info-group-item">
                 <i className="fas fa-arrow-left"></i>
-                Chose and submit parameters on the sliders first, please
+                Choose and submit parameters on the sliders first, please
               </div>
             </div>
           </div>
