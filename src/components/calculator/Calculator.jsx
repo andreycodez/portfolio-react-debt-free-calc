@@ -50,7 +50,7 @@ class Calculator extends React.Component {
       const generalInfo = document.getElementById('calcGeneralInfo');
       generalInfo.innerHTML = "<h1>Congrats!</h1>You are now <strong>DEBT-FREE</strong>";
     }
-    //console.log(this.state);
+    console.log(this.state);
   }
 
   resetCalc = () => {
@@ -145,10 +145,11 @@ class Calculator extends React.Component {
   submitSlidersClickHandle = () => {
     const balance = +document.getElementById('amount').value || +document.getElementById('amountInput').defaultValue;
     const interest = +document.getElementById('interest').value || +document.getElementById('interestInput').defaultValue;
-    const interestUSD = balance * interest / 100;
+    const interestUSD = this.roundValue(balance * interest / 100);
+    const principalPaymentCyr = this.roundValue(balance / 100);
     const interestPaymentCur = this.roundValue(interestUSD / 12);
-    const minPayment = Math.round(((balance / 100) + (interestUSD / 12))*100)/100;
-    const maxPayment = Math.round(((balance) + (interestUSD / 12))*100)/100;
+    const minPayment = this.roundValue((balance / 100) + (interestUSD / 12));
+    const maxPayment = this.roundValue((balance) + (interestUSD / 12));
 
     this.setState( {
         loan: balance,
@@ -156,6 +157,7 @@ class Calculator extends React.Component {
         interest: interest,
         interestUSD: interestUSD,
         interestPaymentCur: interestPaymentCur,
+        principalPaymentCur: principalPaymentCyr,
         minPayment: minPayment,
         maxPayment: maxPayment,
         isCalcSet: true,
@@ -169,7 +171,7 @@ class Calculator extends React.Component {
 
   submitPaymentClickHandle = () => {
     const paymentField = document.getElementById('paymentAmount');
-    const payment = +paymentField.value;
+    const payment = this.roundValue(+paymentField.value);
     const principalPaid = this.roundValue(payment - this.state.interestPaymentCur);
     const interestPaid = this.state.interestPaymentCur;
     const oldBalance = this.state.balance
@@ -177,12 +179,12 @@ class Calculator extends React.Component {
     const interestUSD = balance * this.state.interest / 100;
     const minPayment = Math.round(((balance / 100) + (interestUSD / 12)) * 100) / 100;
     const newInterestPaymentCur = this.roundValue(balance * (this.state.interest / 100 / 12));
-    const maxPayment = Math.round(((balance) + (interestUSD / 12))*100)/100;
+    const principalPaymentCyr = this.roundValue(balance / 100);
+    const maxPayment = balance + newInterestPaymentCur;
     let calcIsOver = false;
     if (balance <= 0) {
       calcIsOver = true;
     }
-
     const newPayment = {
       date: new Date().toLocaleDateString(),
       amount: payment,
@@ -196,6 +198,7 @@ class Calculator extends React.Component {
       maxPayment: maxPayment,
       payments: [...this.state.payments, newPayment],
       interestPaymentCur: newInterestPaymentCur,
+      principalPaymentCur: principalPaymentCyr,
       principalPaid: this.roundValue(this.state.principalPaid + principalPaid),
       interestPaid: this.roundValue(this.state.interestPaid + interestPaid),
       isCalcOver: calcIsOver,
