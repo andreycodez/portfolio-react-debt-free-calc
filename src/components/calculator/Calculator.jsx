@@ -50,7 +50,7 @@ class Calculator extends React.Component {
       const generalInfo = document.getElementById('calcGeneralInfo');
       generalInfo.innerHTML = "<h1>Congrats!</h1>You are now <strong>DEBT-FREE</strong>";
     }
-    console.log(this.state);
+    //console.log(this.state);
   }
 
   resetCalc = () => {
