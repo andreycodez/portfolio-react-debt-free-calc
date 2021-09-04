@@ -39,12 +39,8 @@ class Calculator extends React.Component {
     if (this.state.isCalcOver) {
       const paymentContainer = document.getElementById('paymentContainer');
       paymentContainer.style.display = 'none';
-      // const paymentField = document.getElementById('paymentAmount');
-      // paymentField.style.display = 'none';
       const paymentButton = document.getElementById('paymentSubmit');
       paymentButton.style.display = 'none';
-      // const setValueLinks = document.getElementById('setValueLinks');
-      // setValueLinks.style.display = 'none';
       const resetCalcButton = document.getElementById('resetCalc');
       resetCalcButton.style.display = 'block';
       const generalInfo = document.getElementById('calcGeneralInfo');
