@@ -2,7 +2,7 @@ import React from "react";
 
 const NewPayment = ({ isError, arrSetValue, onNewPaymentSubmit, onChange, onReset, onSetValue, appState}) => {
   const message = !appState.isCalcOver
-    ? (`In order to be debt free you need to make a minimum monthly payment of <span>$${appState.minPayment}</span>`)
+    ? (`You have to make at least <span>${appState.normalPayments}</span> normal payments of <span>$${appState.normalPayment}</span> to be debt free.`)
     : (`<h2>You are now debt free!</h2>`)
   return (
     <>
@@ -16,7 +16,6 @@ const NewPayment = ({ isError, arrSetValue, onNewPaymentSubmit, onChange, onRese
               min="0"
               placeholder={`not less than ${appState.minPayment}`}
               step="100"
-              defaultValue="0"
               value={appState.payment}
               onChange={onChange}/>
             <div id="errorMessage" className="errorMessage">{appState.inputError}</div>

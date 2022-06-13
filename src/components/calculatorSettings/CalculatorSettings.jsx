@@ -25,7 +25,7 @@ const CalculatorSettings = ({onSubmit, onSliderChange, loan, interest}) => {
       {sliders.map(slider => {
         const { id, label, valueIcon, min, max, step, value } = slider;
         return (
-          <div className="slider-parameter">
+          <div key={slider.id} className="slider-parameter">
             <div className="slider-title">{label}</div>
             <div className="slider-price">
               <span className="measure">{valueIcon}</span><span id={id + 'Label'} className="value">{value}</span>

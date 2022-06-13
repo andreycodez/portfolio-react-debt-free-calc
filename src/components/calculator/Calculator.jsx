@@ -15,8 +15,10 @@ const INIT_STATE = {
   isCalcOver: false,
   minPayment: 0,
   maxPayment: () => (this.balance + this.interestPaymentCur),
+  normalPayment: 0,
   payment: 0,
   payments: [],
+  normalPayments: 0,
   principalPaid: 0,
   interestPaid: 0,
   inputError: '',
@@ -30,6 +32,28 @@ class Calculator extends React.Component {
 
   resetCalc = () => {
     this.setState(INIT_STATE);
+  }
+
+  normalPayment = (loan, interest) => {
+    let isPaid = false;
+    let balance = loan;
+    let newBalance = 0;
+    let newInterest = 0;
+    let normalPayment = (loan / 100) + (interest / 100 / 12) * loan;
+    let arrNormalPayments = [normalPayment];
+    while (!isPaid) {
+      newInterest = +(((interest / 100 / 12) * balance).toFixed(2));
+      newBalance = +((balance - normalPayment + newInterest).toFixed(2));
+      arrNormalPayments.push(newBalance);
+      balance = newBalance;
+      if ((balance < 0)) {
+        isPaid = true;
+      }
+    }
+    this.setState({
+      normalPayments: arrNormalPayments.length,
+      normalPayment: normalPayment,
+    })
   }
 
   sliderHandle = (slider) => {
@@ -78,6 +102,7 @@ class Calculator extends React.Component {
     const interestPaymentCur = this.roundValue(interestUSD / 12);
     const minPayment = this.roundValue((balance / 100) + (interestUSD / 12));
     const maxPayment = this.roundValue((balance) + (interestUSD / 12));
+    this.normalPayment(this.state.loan, this.state.interest);
 
     this.setState( {
         balance: balance,
@@ -132,7 +157,7 @@ class Calculator extends React.Component {
   render() {
     const appState = this.state
     const isError = appState.inputError.length ? 'incorrect' : '';
-    const arrSetValue = {'min': 'Pay min amount', 'max': 'Close loan'};
+    const arrSetValue = {'min': 'Pay min amount', 'normal': 'Make normal payment', 'max': 'Close loan'};
       return (
         <div className="calculator-body">
           <div className="calculator-left">
@@ -149,13 +174,11 @@ class Calculator extends React.Component {
                 <PaymentsList payments={appState.payments} />
               </div>
             ) : (
-              <form className="slider-group calculator-left-item">
-                <CalculatorSettings
-                  loan={this.state.loan}
-                  interest={this.state.interest}
-                  onSubmit={this.submitSlidersClickHandle}
-                  onSliderChange={this.sliderHandle}/>
-              </form>
+              <CalculatorSettings
+                loan={appState.loan}
+                interest={appState.interest}
+                onSubmit={this.submitSlidersClickHandle}
+                onSliderChange={this.sliderHandle}/>
             )}
           </div>
           <CalculatorStats appState={appState} />
